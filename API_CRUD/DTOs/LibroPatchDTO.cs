@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace API_CRUD.DTOs
 {
-    public class LibroDTOC
+    public class LibroPatchDTO
     {
         [Required(ErrorMessage = "El campo {0} es requerido")]
         [NombreCapital]
@@ -11,7 +11,5 @@ namespace API_CRUD.DTOs
         public string Titulo { get; set; }
         public DateTime FechaPublicacion { get; set; }
 
-
-        public List<int> AutoresIds { get; set; }
     }
 }

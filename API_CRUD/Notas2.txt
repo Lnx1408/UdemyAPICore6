@@ -14,5 +14,14 @@ Las carpetas que influyen directamente con DTO y automapper son:
 *	Controllers: Se hace la transformación de clase a DTO o viceversa según la funcionalidad CRUD que se esté usando.
 
 
+--------------------------------------------------------------- HTTP PATH ---------------------------------------------------------------
+Permite realizar actualizaciones parciales a los datos.
+Para usar el PATH se usa una nueva clase y también se instala el paquete: Microsoft.AspNetCore.Mvc.NewtonsoftJson
+
+Hacemos el mapeo en la clase AutomapperProfiles
+
+implementamos la funcionalidad en el controller y por último configuramos en la clase startup en el método ConfigureServices()
+
+
 
 

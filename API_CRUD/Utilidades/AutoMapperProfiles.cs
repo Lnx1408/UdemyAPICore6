@@ -24,6 +24,8 @@ namespace API_CRUD.Utilidades
             CreateMap<ComentarioDTOC, Comentario>();
             CreateMap<Comentario, ComentarioDTOR>();
 
+            CreateMap<LibroPatchDTO, Libro>().ReverseMap();
+
 
 
 
