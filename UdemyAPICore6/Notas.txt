@@ -1,0 +1,129 @@
+﻿
+------------------------------------------------------------ Primeros pasos ------------------------------------------------------------
+
+1. Crear el proyecto ASP.NET Core Web API
+2. Crear la clase Startup para iniciar los servicios y Middleware
+	Nota: Los comandos que se van a implementar en esta clase se podrían colocar dentro de la clase program, la clase Startup es para organizar.
+3. Instaciar la clase startup en program e implementar los métodos.
+4. Desactivar los tipos de referencias no nulos, hacemos clic en el nombre del proyecto y modificamos la propiedad: <Nullable>disable</Nullable>
+
+
+--------------------------------------------------------- Limpiar el proyecto ---------------------------------------------------------
+
+Eliminar las clases que crea por defecto el proyecto. 
+
+
+------------------------------------------------------- Instalar paquetes NuGet -------------------------------------------------------
+
+*	Microsoft.EntityFrameworkCore.SqlServer
+*	Microsoft.EntityFrameworkCore.Tools
+
+
+--------------------------------------------------------- Agregar la conexión ---------------------------------------------------------
+
+Ir al appsetting.Development.json:
+
+
+------------------------------------------------------- Crear clase AppDbContext ------------------------------------------------------
+*	Agregar el constructor
+*	Instanciar la clase dentro de Startup
+
+
+
+
+---------------------------------------------------------- Añadir migraciones ---------------------------------------------------------
+Add-Migration Inicial - Permite crear las tablas en la DB a partir de las entidades existentes
+Update-Database - Actualiza la DB y se muestra las tablas creadas
+
+
+
+
+
+Cuando se trabaja con bases de datos es recomendable utilizar la programación asíncrona.
+ActionResult<> nos permite retornar un actionResult o el tipo de dato que se coloque dentro.
+IActionResult retorna un actionResult o algùn tipo de dato que no se ha especificado, pero solo puede retornar un OK(TipoDato), u otro action de retorno.
+IMPORTANTE: Es recomendable utilizar ActionResult.
+
+El Task<> permite trabajar de manera asíncrona, es recomendado cuando se hacen consultas a DB
+
+
+
+
+---------------------------------------------------------- DataBinding ---------------------------------------------------------
+Espeficican la fuente de nuestros datos que recibimos en las peticiones
+[FromBody]
+[FromRoute]
+[FromHeader]
+[FromQuery] // son llos parámetros que vienen luego del "?"" en las rutas y pueden estar separados por "&"
+[FromServices]
+
+
+
+---------------------------------------------------------- Validaciones ---------------------------------------------------------
+*	Por Atributo
+*	Por Modelo
+*	Por Controlador
+
+
+---------------------------------------------------- Inyección de dependencias ---------------------------------------------------
+Nota: Las clases deberían depender de abstracciones y no de tipos concretos (Principio de inyección de dependencias).
+
+Si creamos una intefaz y varias clases las implementan (como la interfaz IServicio), entonces podemos hacer uso de esas clases 
+sin problemas y si luego se implementa una nueva clase, entonces podremos hacer uso de ella de todas formas.
+
+
+Instanciamos la clase IServicio en la clase Startup
+
+
+Tiepo de vida de un servicio: 
+*	Transient: siempre nos devuelve una nueva instancia
+*	Scoped: Devuelve la misma instancia dentro del mismo contexto, pero en diferentes peticiones crea una nueva
+*	Singleton: Devuelve siempre la misma instancia.
+
+
+
+-------------------------------------------------------------- ILogger -----------------------------------------------------------
+Procesa los mensajes y los envía a un proveedor (DB, archivo, etc) para mantener los registros de errores o procesos.
+
+Tipos niveles de logs:
+1.-	Trace
+2.-	Debug
+3.-	Information
+4.-	Warning
+5.-	Error
+6.-	Critical
+
+Sintaxis: logger.LogInformation("Mensaje");
+Se puede configurar dentro de Appsetting.Development.json (logLevel) el nivel de logs que queremos que se muestren o que sean de relevancia.
+La configuración dentro del .json se hace a nivel de namespace.
+
+
+
+---------------------------------------------------- Middleware ---------------------------------------------------
+Son una tubería de procesos que se ejecutan antes de que haya una respuesta en nuestros endpoint.
+sintaxis IApplicationBuilder.UseRouting();
+Podemos configurarlos en el método "configure" dentro de la clase startup o program que es en donde viene por defecto.
+Con IApplicationBuilder.Run(), se puede detener la ejecución de los middleware que vengan después (Ejemplo en Startup - configure())
+
+------------------------------------------------------ Filtros -----------------------------------------------------
+Permiten ejecutar código en un momento determinado del ciclo de vida de una petición.
+
+Tipos de filtros:
+*	Filtros de autorización: Permite o deniega que un usuario realice una acción determinada.
+*	Filtros de recursos: Se ejecutan luego de los filtros de autorización
+*	Filtros de acción: Se ejecutan antes o después de una acción.
+*	Filtros de Excepción: Se ejecuta cuando hay una excepción no atrapada en un try catch
+*	Filtros de Resultados: Se ejecuta antes o después de un ActionResult
+
+Alcance de Filtros:
+*	A nivel de acción
+*	A nivel de controlador
+*	A nivel global
+
+Nota: Se puede agregar los filtros desde la clase program o startup(Depende de cuál esté usando) en el método configure() luego del useRouting() 
+
+
+---------------------------------------------------- IhostedServices ---------------------------------------------------
+Permite ejecutar tareas de manera recurrente al inicio o al final del ciclo de vida del webApi.
+
+

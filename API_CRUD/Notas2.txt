@@ -1,0 +1,18 @@
+﻿-------------------------------------------------------------- Automapper --------------------------------------------------------------
+NuGet Package: AutoMapper.Extensions.Microsoft.DependencyInjection
+Permite mapear los atributos de nuestras clases para que mantenga un consistencia con la DB.
+
+
+Una vez instalado se debe inyectar el servicio en la clase Startup, en el método ConfigureServices();
+
+
+----------------------------------------------------------- DTO y Automapper -----------------------------------------------------------
+Las carpetas que influyen directamente con DTO y automapper son:
+*	DTOs:Se encuentran los datos de las entidades que van a interactuar directamente, por ejemplo, se omite el ID entre sus atributos 
+	para el registro porque es autoincrementable.
+*	Utilidades: Tiene los perfiles de automapeo, esto nos evita tener que hacer match de cada atributo entre la clase DTO y nuestra clase en entidades
+*	Controllers: Se hace la transformación de clase a DTO o viceversa según la funcionalidad CRUD que se esté usando.
+
+
+
+
