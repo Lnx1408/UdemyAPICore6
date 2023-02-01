@@ -117,7 +117,7 @@ namespace API_CRUD.Controllers
             var existe = await context.Autores.AnyAsync(x => x.Id.Equals(id));
             if (!existe)
             {
-                return NotFound();
+                return NotFound($"No existe el autor con ID {id}");
             }
 
             context.Remove(new Autor() { Id = id});
