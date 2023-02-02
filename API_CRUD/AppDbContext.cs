@@ -1,9 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using API_CRUD.Entidades;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace API_CRUD
 {
-    public class AppDbContext : DbContext
+    /// <summary>
+    /// Al trabajar con identity ya no se extiende desde la clase DbContext
+    /// </summary>
+    public class AppDbContext : IdentityDbContext
     {
         public AppDbContext(DbContextOptions options) : base(options)
         {

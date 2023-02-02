@@ -24,4 +24,42 @@ implementamos la funcionalidad en el controller y por último configuramos en la
 
 
 
+----------------------------------------------------- Proveedores de configuración -----------------------------------------------------
+
+*	appsetting.json: Se usan estas configuraciones para un ambiente de producción.
+*	Variables de ambiente: Aquí se recomienda colocar la cadena de conexión a la DB o servicio, ya que estas variables no son accesibles desde el codigo fuente,
+	ni siquiera del appsetting.json. Pueden ser accedidas usando el IConfiguration. (Clic derecho sobre el nombre del proyecto/debug/variables)
+*	User Secrets: No estan prewsentes en ninguna parte del código, ni ficheros. Además de que solo van a afectar al ambiente de desaarrollo. 
+		(Clic derechio sobre el nombre del protyecto/ administrar secretos de usuario)
+*	CommandLine: Se ejecuta desde la terminal con la ruta del proyecto donde se encuentra el archivo .csproj, con el comando dotnet run --"atributo = valor del atributo" 
+
+Nota: Los proveedores de configuración tienen un orden, por lo tanto si hay una variable con el mismo nombre en diferente proveedor, se tomará el de mayor prioridad.
+Prioridad:
+	0.- CommandLine
+	1.-	EnviromentVariables
+	2.- UserSecrets
+	3.- appsettings
+
+Recomendación: Podemos usar variables de ambiente para guardar nuestro connectionString o algún tipo de dato sensible.
+
+--------------------------------------------------------------- Autenticación ---------------------------------------------------------------
+Esquemas:
+	*	Anónimo: Cualquiera puede acceder a los endpoints. El que se usa por defecto.
+	*	Basic: El password se convierte en byte64, pero no es tan seguro, a menos que se use ssl.
+	*	Bearer: Esquema basado en token.
+----------------------------------------------------------------- Identity -----------------------------------------------------------------
+1.	Instalar el paquete: Microsoft.AspNetCore.Identity.EntityFrameworkCore
+
+2.	En la consola de administrador de paquetes ingresamos el comando Add-Migration SistemaUsuarios y actualizamos la DB (Update-Database).
+
+3.	Configurar los servicios en la clase startup
+
+
+
+
+
+
+
+
+
 

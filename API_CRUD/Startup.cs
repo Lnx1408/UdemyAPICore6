@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using API_CRUD.Filtros;
 using API_CRUD.Middlewares;
+using Microsoft.AspNetCore.Identity;
 
 namespace API_CRUD
 {
@@ -38,6 +39,12 @@ namespace API_CRUD
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
             services.AddAutoMapper(typeof(Startup));
+
+
+            //Servicio de Identity
+            services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
 
 
         }

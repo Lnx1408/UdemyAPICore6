@@ -5,6 +5,7 @@ using API_CRUD.Entidades;
 using API_CRUD.Filtros;
 using API_CRUD.DTOs;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace API_CRUD.Controllers
 {
@@ -14,13 +15,16 @@ namespace API_CRUD.Controllers
     {
         private readonly AppDbContext context;
         private readonly IMapper mapper;
+        private readonly IConfiguration configuration;
 
-        public AutoresController(AppDbContext context, IMapper mapper)
+        public AutoresController(AppDbContext context, IMapper mapper, IConfiguration configuration)
         {
             this.context = context;
             this.mapper = mapper;
+            this.configuration = configuration;
         }
 
+        [Authorize(AuthenticationSchemes =JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet]
         public async Task<List<AutorDTOR>> Get()
         {
@@ -124,6 +128,15 @@ namespace API_CRUD.Controllers
             await context.SaveChangesAsync();
             return Ok();
 
+        }
+
+
+        [HttpGet("Configuraciones")]
+        public ActionResult<string> getConnectionResult()
+        {
+            string cadena = configuration["connectionStrings:defaultConnection"] + "\n";
+            cadena += configuration["apellido"]; 
+            return cadena;
         }
 
     }
