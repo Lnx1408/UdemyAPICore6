@@ -1,6 +1,7 @@
 ﻿using API_CRUD.DTOs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -15,6 +16,7 @@ namespace API_CRUD.Controllers
         private readonly UserManager<IdentityUser> userManager;
         private readonly IConfiguration configuration;
         private readonly SignInManager<IdentityUser> signInManager;
+        private readonly IDataProtector dataProtector;
 
         /// <summary>
         /// Constructor parametrizado que inicializa las interfaces requeridas
@@ -22,12 +24,53 @@ namespace API_CRUD.Controllers
         /// <param name="userManager">Necesario para el registro de usuarios</param>
         /// <param name="configuration"></param>
         /// <param name="signInManager">Necesario para el login</param>
-        public CuentasController(UserManager<IdentityUser> userManager, IConfiguration configuration, SignInManager<IdentityUser> signInManager)
+        public CuentasController(UserManager<IdentityUser> userManager, IConfiguration configuration, SignInManager<IdentityUser> signInManager, IDataProtectionProvider dataProtectionProvider)
         {
             this.userManager = userManager;
             this.configuration = configuration;
             this.signInManager = signInManager;
+            // String de propósito, es parte de la llave de encriptación
+            dataProtector = dataProtectionProvider.CreateProtector("SeRecomiendaUsarCaracteresAleatoriosParaMasSeguridad");
         }
+
+        [HttpGet("Encriptar")]
+        public ActionResult Encriptar()
+        {
+            var textoPlano = "Voy a ser encriptado";
+            var textoCifrado = dataProtector.Protect(textoPlano);
+            var textoDesencriptado = dataProtector.Unprotect(textoCifrado);
+
+            return Ok( new {
+               textoPlano = textoPlano,
+               textoCifrado = textoCifrado,
+               textoDesencriptado = textoDesencriptado
+               
+            });
+        }
+
+        /// <summary>
+        /// Si pasa el tiempo establecido, entonces no se va a poder descifrar el código. 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("EncriptarPorTiempo")]
+        public ActionResult EncriptarPorTiempo()
+        {
+            var protectorLimitadoPorTiempo = dataProtector.ToTimeLimitedDataProtector();
+
+            var textoPlano = "Voy a ser encriptado";
+            var textoCifrado = protectorLimitadoPorTiempo.Protect(textoPlano, lifetime: TimeSpan.FromSeconds(5));
+            Thread.Sleep(6000);
+            var textoDesencriptado = protectorLimitadoPorTiempo.Unprotect(textoCifrado);
+
+            return Ok(new
+            {
+                textoPlano = textoPlano,
+                textoCifrado = textoCifrado,
+                textoDesencriptado = textoDesencriptado
+
+            });
+        }
+
         [HttpPost("Registrar")]
         public async Task<ActionResult<RespuestaAutenticacion>> Registrar(CredencialesUsuario credencialesUsuario)
         {

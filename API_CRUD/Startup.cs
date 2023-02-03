@@ -107,6 +107,7 @@ namespace API_CRUD
             });
 
 
+            //Permite la encriptación y decriptación de datos - Servicio de protección de datos
             services.AddDataProtection();
             //Configuración del servicio CORS
             services.AddCors(opciones =>
