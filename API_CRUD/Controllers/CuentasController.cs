@@ -1,4 +1,5 @@
 ﻿using API_CRUD.DTOs;
+using API_CRUD.Servicios;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
@@ -16,6 +17,7 @@ namespace API_CRUD.Controllers
         private readonly UserManager<IdentityUser> userManager;
         private readonly IConfiguration configuration;
         private readonly SignInManager<IdentityUser> signInManager;
+        private readonly HashService hashService;
         private readonly IDataProtector dataProtector;
 
         /// <summary>
@@ -24,11 +26,14 @@ namespace API_CRUD.Controllers
         /// <param name="userManager">Necesario para el registro de usuarios</param>
         /// <param name="configuration"></param>
         /// <param name="signInManager">Necesario para el login</param>
-        public CuentasController(UserManager<IdentityUser> userManager, IConfiguration configuration, SignInManager<IdentityUser> signInManager, IDataProtectionProvider dataProtectionProvider)
+        public CuentasController(UserManager<IdentityUser> userManager, IConfiguration configuration
+            , SignInManager<IdentityUser> signInManager, IDataProtectionProvider dataProtectionProvider
+            , HashService hashService)
         {
             this.userManager = userManager;
             this.configuration = configuration;
             this.signInManager = signInManager;
+            this.hashService = hashService;
             // String de propósito, es parte de la llave de encriptación
             dataProtector = dataProtectionProvider.CreateProtector("SeRecomiendaUsarCaracteresAleatoriosParaMasSeguridad");
         }
@@ -70,6 +75,23 @@ namespace API_CRUD.Controllers
 
             });
         }
+
+        [HttpGet("hash/{textoPlano}")]
+        public ActionResult RealizarHash(string textoPlano)
+        {
+            var resultado1 = hashService.Hash(textoPlano);
+            var resultado2 = hashService.Hash(textoPlano);
+
+            return Ok(new
+            {
+                textoPlano = textoPlano,
+                resultado1 = resultado1,
+                resultado2 = resultado2,
+            });
+        }
+
+
+
 
         [HttpPost("Registrar")]
         public async Task<ActionResult<RespuestaAutenticacion>> Registrar(CredencialesUsuario credencialesUsuario)

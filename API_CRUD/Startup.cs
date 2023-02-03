@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using System.IdentityModel.Tokens.Jwt;
+using API_CRUD.Servicios;
 
 namespace API_CRUD
 {
@@ -109,6 +110,8 @@ namespace API_CRUD
 
             //Permite la encriptación y decriptación de datos - Servicio de protección de datos
             services.AddDataProtection();
+            services.AddTransient<HashService>();
+
             //Configuración del servicio CORS
             services.AddCors(opciones =>
             {
