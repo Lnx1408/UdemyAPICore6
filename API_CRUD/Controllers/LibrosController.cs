@@ -41,7 +41,7 @@ namespace API_CRUD.Controllers
             return mapper.Map<LibroDTORConAutor>(libro);
         }
 
-        [HttpPost]
+        [HttpPost(Name ="RegistrarLibro")]
         public async Task<ActionResult> Post(LibroDTOC libroDTOC)
         {
             if (libroDTOC.AutoresIds == null)
@@ -72,7 +72,7 @@ namespace API_CRUD.Controllers
         /// <param name="id"></param>
         /// <param name="libroDTOC"></param>
         /// <returns></returns>
-        [HttpPut("{id:int}")]
+        [HttpPut("{id:int}", Name = "ActualizarLibro")]
         public async Task<ActionResult> Put(int id, LibroDTOC libroDTOC)
         {
              var libroDb = await context.Libros
@@ -101,7 +101,7 @@ namespace API_CRUD.Controllers
                 }
             }
         }
-        [HttpPatch]
+        [HttpPatch(Name ="ActualizarPArcualmenteLibro")]
         public async Task<ActionResult> Patch(int id, JsonPatchDocument<LibroPatchDTO> patchDocument)
         {
             if (patchDocument == null)
@@ -134,7 +134,7 @@ namespace API_CRUD.Controllers
         }
 
 
-        [HttpDelete("{id:int}")]
+        [HttpDelete("{id:int}", Name ="EliminarLibro")]
         public async Task<ActionResult> Delete(int id)
         {
             var existe = await context.Libros.AnyAsync(x => x.Id.Equals(id));

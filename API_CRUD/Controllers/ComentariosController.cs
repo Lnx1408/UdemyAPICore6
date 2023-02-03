@@ -24,7 +24,7 @@ namespace API_CRUD.Controllers
             this.userManager = userManager;
         }
 
-        [HttpPost]
+        [HttpPost(Name = "RegistrarComentario")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> Post(int libroId, ComentarioDTOC comentarioDTOC)
         {
@@ -51,7 +51,7 @@ namespace API_CRUD.Controllers
 
         }
 
-        [HttpPut("{id:int}")]
+        [HttpPut("{id:int}", Name ="ActualizarComentario")]
         public async Task<ActionResult> Put(int libroId, int id, ComentarioDTOC comentarioDTOC)
         {
             var existeLibro = await context.Libros.AnyAsync(libroDB => libroDB.Id.Equals(libroId));
@@ -89,7 +89,7 @@ namespace API_CRUD.Controllers
             return mapper.Map<ComentarioDTOR>(comentario);
         }
 
-        [HttpGet]
+        [HttpGet(Name = "ObtenerComentarioLibro")]
         public async Task<ActionResult<List<ComentarioDTOR>>> Get(int libroId)
         {
             var existeLibro = await context.Libros.AnyAsync(libroDB => libroDB.Id.Equals(libroId));

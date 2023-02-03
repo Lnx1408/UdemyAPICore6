@@ -38,7 +38,7 @@ namespace API_CRUD.Controllers
             dataProtector = dataProtectionProvider.CreateProtector("SeRecomiendaUsarCaracteresAleatoriosParaMasSeguridad");
         }
 
-        [HttpGet("Encriptar")]
+        [HttpGet("Encriptar", Name ="Encriptar")]
         public ActionResult Encriptar()
         {
             var textoPlano = "Voy a ser encriptado";
@@ -57,7 +57,7 @@ namespace API_CRUD.Controllers
         /// Si pasa el tiempo establecido, entonces no se va a poder descifrar el código. 
         /// </summary>
         /// <returns></returns>
-        [HttpGet("EncriptarPorTiempo")]
+        [HttpGet("EncriptarPorTiempo", Name ="EncriptarPorTiempo")]
         public ActionResult EncriptarPorTiempo()
         {
             var protectorLimitadoPorTiempo = dataProtector.ToTimeLimitedDataProtector();
@@ -76,7 +76,7 @@ namespace API_CRUD.Controllers
             });
         }
 
-        [HttpGet("hash/{textoPlano}")]
+        [HttpGet("hash/{textoPlano}", Name = "EncriptarConHash")]
         public ActionResult RealizarHash(string textoPlano)
         {
             var resultado1 = hashService.Hash(textoPlano);
@@ -93,7 +93,7 @@ namespace API_CRUD.Controllers
 
 
 
-        [HttpPost("Registrar")]
+        [HttpPost("Registrar", Name = "Registrar")]
         public async Task<ActionResult<RespuestaAutenticacion>> Registrar(CredencialesUsuario credencialesUsuario)
         {
             var usuario = new IdentityUser { UserName = credencialesUsuario.Email, Email = credencialesUsuario.Email };
@@ -110,7 +110,7 @@ namespace API_CRUD.Controllers
             }
 
         }
-        [HttpPost("login")]
+        [HttpPost("login", Name = "login")]
         public async Task<ActionResult<RespuestaAutenticacion>> Login(CredencialesUsuario credencialesUsuario)
         {
             //Si la propiedad lockoutOnFailure fuese verdadera, entonces bloquearía el acceso a los usuarios que an tenido intentos fallidos para ingresar al aplicativo
@@ -128,7 +128,7 @@ namespace API_CRUD.Controllers
             }
         }
 
-        [HttpGet("RenovarToken")]
+        [HttpGet("RenovarToken", Name = "RenovarToken")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<RespuestaAutenticacion>> Renovar()
         {
@@ -172,7 +172,7 @@ namespace API_CRUD.Controllers
         }
 
 
-        [HttpPost("HacerAdmin")]
+        [HttpPost("HacerAdmin", Name = "HacerAdmin")]
         public async Task<ActionResult> HacerAdmin(EditarAdminDTO editarAdminDTO)
         {
             var usuario = await userManager.FindByEmailAsync(editarAdminDTO.Email);
@@ -181,7 +181,7 @@ namespace API_CRUD.Controllers
 
         }
 
-        [HttpPost("RemoverAdmin")]
+        [HttpPost("RemoverAdmin", Name = "RemoverAdmin")]
         public async Task<ActionResult> RemoverAdmin(EditarAdminDTO editarAdminDTO)
         {
             var usuario = await userManager.FindByEmailAsync(editarAdminDTO.Email);

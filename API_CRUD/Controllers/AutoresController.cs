@@ -25,7 +25,7 @@ namespace API_CRUD.Controllers
             this.configuration = configuration;
         }
 
-        [HttpGet]
+        [HttpGet(Name = "ObtenerAutores")]
         [AllowAnonymous]
         public async Task<List<AutorDTOR>> Get()
         {
@@ -57,7 +57,7 @@ namespace API_CRUD.Controllers
 
 
 
-        [HttpGet("{nombre}")]
+        [HttpGet("{nombre}", Name = "ObtenerAutorNombre")]
         public async Task<ActionResult<List<AutorDTOR>>> buscarAutorNombre([FromRoute] string nombre)
         {
             var autores = await context.Autores.Where(autorDB => autorDB.Nombre.Contains(nombre)).ToListAsync();
@@ -73,7 +73,7 @@ namespace API_CRUD.Controllers
         /// </summary>
         /// <param name="autorDTO"></param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpPost(Name = "RegistrarAutor")]
         public async Task<ActionResult> Post([FromBody] AutorDTOC autorDTO)
         {
             var nombreDuplicado = await context.Autores.AnyAsync(x => x.Nombre == autorDTO.Nombre);
@@ -96,7 +96,7 @@ namespace API_CRUD.Controllers
 
 
 
-        [HttpPut("{id:int}")]
+        [HttpPut("{id:int}", Name ="ActualizarAutor")]
         public async Task<ActionResult> Put(AutorDTOC autorDTO, int id)
         {
             var existe = await context.Autores.AnyAsync(x => x.Id.Equals(id));
@@ -116,7 +116,7 @@ namespace API_CRUD.Controllers
 
         }
 
-        [HttpDelete("{id:int}")]
+        [HttpDelete("{id:int}", Name ="EliminarAutor")]
         public async Task<ActionResult> Delete(int id)
         {
             var existe = await context.Autores.AnyAsync(x => x.Id.Equals(id));
@@ -132,7 +132,7 @@ namespace API_CRUD.Controllers
         }
 
 
-        [HttpGet("Configuraciones")]
+        [HttpGet("Configuraciones", Name ="ObtenerConfiguraciones")]
         public ActionResult<string> getConnectionResult()
         {
             string cadena = configuration["connectionStrings:defaultConnection"] + "\n";

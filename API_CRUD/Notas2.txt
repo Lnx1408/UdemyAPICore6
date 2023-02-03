@@ -77,9 +77,14 @@ Nota: en la página https://jwt.io/ podemos conocer los detalles de nuestro toke
 Se configura en los servicios de la clase Startup
 
 
+
+
 ------------------------------------------------------------------ LogOut ------------------------------------------------------------------
 
 Por defecto no se realiza acción alguna en el Web API, se puede borrar el token desde el cliente
+
+
+
 
 ------------------------------------------------------------------- CORS -------------------------------------------------------------------
 Permite tener acceso a nuestras APIS desde diferentes origenes => Esquema URI + nombre del host + # de puerto
@@ -89,13 +94,26 @@ Se configuran dentro de la clase startup.
 
 Con la página https://apirequest.io/ puedes probar tus APIS, simulando peticiones desde sitios externos.
 
+
+
+
 ------------------------------------------------------------ Protección de datos -----------------------------------------------------------
 IDataProtectionProvider, IDataProtector, permiten encriptar y desencriptar información (Ejemplo en clase cuentaController)
+
+
+
 
 ----------------------------------------------------------------- Hashes -------------------------------------------------------------------
 Este algoritmo permite cifrar un mensaje, pero no su desencriptación, es usada para verificar passwords comprobando el input con un hash
 Hace uso de SAL, un valor aleatorio que se anexa al testo plano al que se le aplicará el hash.
 
 Nota: en caso de que se vaya a guardar el hash, es necesario almacenar también la SAL relacioanda a este. 
+
+
+
+------------------------------------------------------------------ HATEOAS ------------------------------------------------------------------
+Hipermedia como motor del listado de la aplicación es una restricción de REST que ayuda a los clientes a navegar por los recursos de nuestra
+web API y saber de los servicios que se ofrece.
+
 
 
