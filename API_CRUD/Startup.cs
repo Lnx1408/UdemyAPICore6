@@ -4,6 +4,9 @@ using System.Text.Json.Serialization;
 using API_CRUD.Filtros;
 using API_CRUD.Middlewares;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.OpenApi.Models;
 
 namespace API_CRUD
 {
@@ -24,8 +27,25 @@ namespace API_CRUD
         public void ConfigureServices(IServiceCollection services)
         {
 
+
             //Servicio de filtro de autorización - Instalar el paquete NuGet "Microsoft.AspNetCore.Authentication.JwtBearer"
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                //Configurar el bearer
+                .AddJwtBearer(opciones=> opciones.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = false,
+                    //No se valida la audiencia
+                    ValidateAudience= false,
+                    //Validar el tiempo de vida del token
+                    ValidateLifetime= true,
+                    //Validar la firma
+                    ValidateIssuerSigningKey= true,
+                    //Configurar la firma
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(Configuration["llaveJwt"])),
+                    ClockSkew = TimeSpan.Zero
+
+                });
 
             services.AddControllers(opciones =>
             {
@@ -37,7 +57,35 @@ namespace API_CRUD
             services.AddDbContext<AppDbContext>(options=> options.UseSqlServer(Configuration.GetConnectionString("defaultConnection")));
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen();
+
+            //Añadimos las configuraciones para poder introducir el token en nuestros endpoints y se muestre qué endpoint necesitan autorización y la capacidad de ingresar el tiken para autorizar el uso de las APIS
+            services.AddSwaggerGen(c =>
+            {
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    new string[]{}
+                    }
+                });
+            });
+
             services.AddAutoMapper(typeof(Startup));
 
 

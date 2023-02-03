@@ -54,6 +54,20 @@ Esquemas:
 
 3.	Configurar los servicios en la clase startup
 
+4.	Crear las clases en el DTOs (RespuestaAutenticacion, CredencialesUsuario)
+
+5.	Configuramos los controllers respectivos de las clases previas
+
+6.	Configuramos los servicios de Jwt y AddSwaggerGen  en Startup
+
+
+
+Mota: Si tenemos el tag [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)] de forma global (antes de la clase), 
+todos los endpoint van a pedir autenticación, pero se pueden crear excepciones con la etiqueta [AllowAnonymous] en cada método que no requiera explícitamente la autorización.
+
+
+Nota: en la página https://jwt.io/ podemos conocer los detalles de nuestro token.
+
 
 
 

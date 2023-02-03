@@ -12,11 +12,19 @@ namespace API_CRUD.Controllers
     {
         private readonly UserManager<IdentityUser> userManager;
         private readonly IConfiguration configuration;
+        private readonly SignInManager<IdentityUser> signInManager;
 
-        public CuentasController(UserManager<IdentityUser> userManager, IConfiguration configuration)
+        /// <summary>
+        /// Constructor parametrizado que inicializa las interfaces requeridas
+        /// </summary>
+        /// <param name="userManager">Necesario para el registro de usuarios</param>
+        /// <param name="configuration"></param>
+        /// <param name="signInManager">Necesario para el login</param>
+        public CuentasController(UserManager<IdentityUser> userManager, IConfiguration configuration, SignInManager<IdentityUser> signInManager)
         {
             this.userManager = userManager;
             this.configuration = configuration;
+            this.signInManager = signInManager;
         }
         [HttpPost("Registrar")]
         public async Task<ActionResult<RespuestaAutenticacion>> Registrar(CredencialesUsuario credencialesUsuario)
@@ -34,6 +42,23 @@ namespace API_CRUD.Controllers
                 return BadRequest(resultado.Errors);
             }
 
+        }
+        [HttpPost("login")]
+        public async Task<ActionResult<RespuestaAutenticacion>> Login(CredencialesUsuario credencialesUsuario)
+        {
+            //Si la propiedad lockoutOnFailure fuese verdadera, entonces bloquearía el acceso a los usuarios que an tenido intentos fallidos para ingresar al aplicativo
+            var resultado = await signInManager.PasswordSignInAsync(credencialesUsuario.Email, credencialesUsuario.Password, isPersistent:false, lockoutOnFailure: false);
+
+            if (resultado.Succeeded)
+            {
+                return ConstruirToken(credencialesUsuario);
+
+            }
+            else
+            {
+                //La respuesta en este punto no debe dar muchos detalles, porque podría significar una brecha de seguridad
+                return BadRequest("Login incorrecto");
+            }
         }
 
         private RespuestaAutenticacion ConstruirToken(CredencialesUsuario  credencialesUsuario)

@@ -11,6 +11,7 @@ namespace API_CRUD.Controllers
 {
     [ApiController]
     [Route("api/autores")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AutoresController: ControllerBase
     {
         private readonly AppDbContext context;
@@ -24,8 +25,8 @@ namespace API_CRUD.Controllers
             this.configuration = configuration;
         }
 
-        [Authorize(AuthenticationSchemes =JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet]
+        [AllowAnonymous]
         public async Task<List<AutorDTOR>> Get()
         {
 
