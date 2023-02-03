@@ -107,6 +107,20 @@ namespace API_CRUD
             });
 
 
+            services.AddDataProtection();
+            //Configuración del servicio CORS
+            services.AddCors(opciones =>
+            {
+                opciones.AddDefaultPolicy(builder =>
+                {
+                    //Se puede colocar la URL externa donde podrán acceder a nuestra Web API
+                    builder.WithOrigins("https://apirequest.io").AllowAnyMethod().AllowAnyHeader();
+                    // Se coloca solo si es necesario exponer las cabeceras
+                    //.WithExposedHeaders();
+                });
+            });
+
+
         }
 
 
@@ -132,6 +146,8 @@ namespace API_CRUD
 
             app.UseRouting();
 
+            //Añadir el uso de cors
+            app.UseCors();
             //Permite usar el filtro de autorización, siempre va antes del useEndpoints
             app.UseAuthorization();
 
