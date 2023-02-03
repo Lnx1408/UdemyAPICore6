@@ -1,6 +1,9 @@
 ﻿using API_CRUD.DTOs;
 using API_CRUD.Entidades;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,17 +15,27 @@ namespace API_CRUD.Controllers
     {
         private readonly AppDbContext context;
         private readonly IMapper mapper;
+        private readonly UserManager<IdentityUser> userManager;
 
-        public ComentariosController(AppDbContext context, IMapper mapper)
+        public ComentariosController(AppDbContext context, IMapper mapper, UserManager<IdentityUser> userManager)
         {
             this.context = context;
             this.mapper = mapper;
+            this.userManager = userManager;
         }
 
         [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> Post(int libroId, ComentarioDTOC comentarioDTOC)
         {
+
+            //Es recomendable obtener los datos del usuario por medio de los claims
+            var emailClaim = HttpContext.User.Claims.Where(claim=> claim.Type == "email").FirstOrDefault();
+            var email = emailClaim.Value;
+            var usuario = await userManager.FindByEmailAsync(email);
+            var usuarioId = usuario.Id;
             var existeLibro = await context.Libros.AnyAsync(libroDB=> libroDB.Id.Equals(libroId));
+            
             if (!existeLibro)
             {
                 return NotFound();
@@ -30,7 +43,7 @@ namespace API_CRUD.Controllers
 
             var comentario = mapper.Map<Comentario>(comentarioDTOC);
             comentario.LibroId = libroId;
-
+            comentario.UsuarioId = usuarioId;
             context.Add(comentario);
             await context.SaveChangesAsync();
             var comentarioDTOR = mapper.Map<ComentarioDTOR>(comentario);

@@ -72,7 +72,9 @@ Nota: en la página https://jwt.io/ podemos conocer los detalles de nuestro toke
 
 
 
+------------------------------------------------------- Autorización basada en claims -------------------------------------------------------
 
+Se configura en los servicios de la clase Startup
 
 
 

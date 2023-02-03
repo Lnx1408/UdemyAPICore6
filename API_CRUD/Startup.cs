@@ -7,12 +7,16 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace API_CRUD
 {
     public class Startup
     {
         public Startup(IConfiguration configuration) {
+
+            //Con esta línea de comando hace que los claims no sean mapeados con nombres extraños, sino con los que realmente hemos definido.
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
             Configuration = configuration;
         }
 
@@ -93,6 +97,14 @@ namespace API_CRUD
             services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
+
+            //Autorización basada en claims
+            services.AddAuthorization(opciones =>
+            {
+                //Se añaden las políticas necesarias para el acceso
+                opciones.AddPolicy("EsAdmin", politica => politica.RequireClaim("esAdmin"));
+                opciones.AddPolicy("EsVendedor", politica => politica.RequireClaim("esVendedor"));
+            });
 
 
         }

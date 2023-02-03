@@ -1,4 +1,6 @@
-﻿namespace API_CRUD.Entidades
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace API_CRUD.Entidades
 {
     public class Comentario
     {
@@ -8,5 +10,7 @@
 
         //Popiedad de navegación: Facilita pasar de una entidad a otra relacionada (Facilita el uso de JOINS)
         public Libro Libro { get; set; }
+        public string UsuarioId { get; set;}
+        public IdentityUser Usuario { get; set;}
     }
 }

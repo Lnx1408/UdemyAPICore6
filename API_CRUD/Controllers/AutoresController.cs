@@ -11,7 +11,7 @@ namespace API_CRUD.Controllers
 {
     [ApiController]
     [Route("api/autores")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "EsAdmin")] //La política se establece en el servicio AddAuthorization de Startup
     public class AutoresController: ControllerBase
     {
         private readonly AppDbContext context;
