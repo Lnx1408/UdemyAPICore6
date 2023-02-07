@@ -25,7 +25,7 @@ namespace API_CRUD.Controllers
             this.configuration = configuration;
         }
 
-        [HttpGet(Name = "ObtenerAutores")]
+        [HttpGet(Name = "obtenerAutores")]
         [AllowAnonymous]
         public async Task<List<AutorDTOR>> Get()
         {
@@ -52,12 +52,16 @@ namespace API_CRUD.Controllers
                 return NotFound();
             }
 
-            return mapper.Map<AutorDTORConLibros>(autor);
+            var dto = mapper.Map<AutorDTORConLibros>(autor);
+            
+            generarEnlaces(dto);
+
+            return dto;
         }
 
 
 
-        [HttpGet("{nombre}", Name = "ObtenerAutorNombre")]
+        [HttpGet("{nombre}", Name = "obtenerAutorNombre")]
         public async Task<ActionResult<List<AutorDTOR>>> buscarAutorNombre([FromRoute] string nombre)
         {
             var autores = await context.Autores.Where(autorDB => autorDB.Nombre.Contains(nombre)).ToListAsync();
@@ -73,7 +77,7 @@ namespace API_CRUD.Controllers
         /// </summary>
         /// <param name="autorDTO"></param>
         /// <returns></returns>
-        [HttpPost(Name = "RegistrarAutor")]
+        [HttpPost(Name = "registrarAutor")]
         public async Task<ActionResult> Post([FromBody] AutorDTOC autorDTO)
         {
             var nombreDuplicado = await context.Autores.AnyAsync(x => x.Nombre == autorDTO.Nombre);
@@ -96,7 +100,7 @@ namespace API_CRUD.Controllers
 
 
 
-        [HttpPut("{id:int}", Name ="ActualizarAutor")]
+        [HttpPut("{id:int}", Name ="actualizarAutor")]
         public async Task<ActionResult> Put(AutorDTOC autorDTO, int id)
         {
             var existe = await context.Autores.AnyAsync(x => x.Id.Equals(id));
@@ -116,7 +120,7 @@ namespace API_CRUD.Controllers
 
         }
 
-        [HttpDelete("{id:int}", Name ="EliminarAutor")]
+        [HttpDelete("{id:int}", Name ="eliminarAutor")]
         public async Task<ActionResult> Delete(int id)
         {
             var existe = await context.Autores.AnyAsync(x => x.Id.Equals(id));
@@ -132,12 +136,28 @@ namespace API_CRUD.Controllers
         }
 
 
-        [HttpGet("Configuraciones", Name ="ObtenerConfiguraciones")]
+        [HttpGet("Configuraciones", Name ="obtenerConfiguraciones")]
         public ActionResult<string> getConnectionResult()
         {
             string cadena = configuration["connectionStrings:defaultConnection"] + "\n";
             cadena += configuration["apellido"]; 
             return cadena;
+        }
+
+        /// <summary>
+        /// Primera forma para generar los enlaces desde el controller, la 2da está en LibrosController.
+        /// </summary>
+        /// <param name="autorDTOR"></param>
+        private void generarEnlaces(AutorDTOR autorDTOR)
+        {
+            autorDTOR.Enlaces.Add(new DatoHATEOAS(enlace: Url.Link("obtenerAutorID", new { id = autorDTOR.Id }), descripcion:"self", metodo: "GET"));
+
+            autorDTOR.Enlaces.Add(new DatoHATEOAS(enlace: Url.Link("actualizarAutor", new { id = autorDTOR.Id }), descripcion: "autor-id", metodo: "PUT"));
+
+            autorDTOR.Enlaces.Add(new DatoHATEOAS(enlace: Url.Link("eliminarAutor", new { id = autorDTOR.Id }), descripcion: "autor-id", metodo: "DELETE"));
+
+
+
         }
 
     }

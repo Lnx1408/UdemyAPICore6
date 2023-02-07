@@ -24,7 +24,7 @@ namespace API_CRUD.Controllers
             this.userManager = userManager;
         }
 
-        [HttpPost(Name = "RegistrarComentario")]
+        [HttpPost(Name = "registrarComentario")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> Post(int libroId, ComentarioDTOC comentarioDTOC)
         {
@@ -51,7 +51,7 @@ namespace API_CRUD.Controllers
 
         }
 
-        [HttpPut("{id:int}", Name ="ActualizarComentario")]
+        [HttpPut("{id:int}", Name ="actualizarComentario")]
         public async Task<ActionResult> Put(int libroId, int id, ComentarioDTOC comentarioDTOC)
         {
             var existeLibro = await context.Libros.AnyAsync(libroDB => libroDB.Id.Equals(libroId));
@@ -77,7 +77,7 @@ namespace API_CRUD.Controllers
         }
 
 
-        [HttpGet("{id:int}", Name ="ObtenerComentarioId")]
+        [HttpGet("id/{id:int}", Name ="obtenerComentarioId")]
         public async Task<ActionResult<ComentarioDTOR>> GetById(int id)
         {
             var comentario = await context.Comentarios.FirstOrDefaultAsync(comentarioDB => comentarioDB.Id.Equals(id));
@@ -89,10 +89,11 @@ namespace API_CRUD.Controllers
             return mapper.Map<ComentarioDTOR>(comentario);
         }
 
-        [HttpGet(Name = "ObtenerComentarioLibro")]
+
+        [HttpGet(Name = "obtenerComentarioLibro")]
         public async Task<ActionResult<List<ComentarioDTOR>>> Get(int libroId)
         {
-            var existeLibro = await context.Libros.AnyAsync(libroDB => libroDB.Id.Equals(libroId));
+            var existeLibro = await context.Libros.AnyAsync(libroDB => libroDB.Id ==libroId);
             if (!existeLibro)
             {
                 return NotFound();

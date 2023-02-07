@@ -27,12 +27,24 @@ namespace API_CRUD.Controllers
 
 
             //Los usuarios por defecto solo tendrán la visualización de los endpoints a los que tengan acceso (Los que no necesitan autenticación).
-            datosHateoas.Add(new DatoHATEOAS(enlace: Url.Link("ObtenerRoot", new { }), descripcion: "self", metodo: "GET"));
+            datosHateoas.Add(new DatoHATEOAS(enlace: Url.Link("obtenerRoot", new { }), descripcion: "self", metodo: "GET"));
 
-            datosHateoas.Add(new DatoHATEOAS(enlace: Url.Link("ObtenerAutores", new { }), descripcion: "autores", metodo: "GET"));
+            datosHateoas.Add(new DatoHATEOAS(enlace: Url.Link("obtenerAutores", new { }), descripcion: "autores", metodo: "POST"));
+
+            datosHateoas.Add(new DatoHATEOAS(enlace: Url.Link("encriptar", new { }), descripcion: "encriptar", metodo: "GET"));
+
+            datosHateoas.Add(new DatoHATEOAS(enlace: Url.Link("encriptarConHash", new { }), descripcion: "encriptar-hash", metodo: "GET"));
+
+            datosHateoas.Add(new DatoHATEOAS(enlace: Url.Link("registrar", new { }), descripcion: "registrar-usuario", metodo: "POST"));
+            
+            datosHateoas.Add(new DatoHATEOAS(enlace: Url.Link("login", new { }), descripcion: "login", metodo: "GET"));
+
+            datosHateoas.Add(new DatoHATEOAS(enlace: Url.Link("obtenerAutores", new { }), descripcion: "autores", metodo: "GET"));
+
+            
 
             //Solo si el usuario registrado es administrador se le mostrará la siguiente información.
-            if(esAdmin.Succeeded)
+            if (esAdmin.Succeeded)
             {
                 datosHateoas.Add(new DatoHATEOAS(enlace: Url.Link("RegistrarAutor", new { }), descripcion: "autor-crear", metodo: "POST"));
                 datosHateoas.Add(new DatoHATEOAS(enlace: Url.Link("obtenerAutorID", new { }), descripcion: "autor-id", metodo: "GET"));

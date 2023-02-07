@@ -2,7 +2,7 @@
 
 namespace API_CRUD.DTOs
 {
-    public class LibroDTOR
+    public class LibroDTOR: Recurso
     {
         public int Id { get; set; }
         public string Titulo { get; set; }
