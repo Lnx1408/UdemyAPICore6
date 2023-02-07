@@ -6,6 +6,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using API_CRUD.Utilidades;
 
 namespace API_CRUD.Controllers
 {
@@ -26,38 +27,52 @@ namespace API_CRUD.Controllers
 
         [HttpGet(Name = "obtenerLibros")]
         [AllowAnonymous]
-        public async Task<ColeccionRecursos<LibroDTOR>> Get()
+        public async Task<IActionResult> Get([FromQuery] bool incluirHATEOAS = true)
         {
 
             var libros = await context.Libros.ToListAsync();
-            var esAdmin = await authorizationService.AuthorizeAsync(User, "esAdmin");
-
-
-            var dtos = mapper.Map<List<LibroDTOR>>(libros);
-            dtos.ForEach(dto => generarEnlaces(dto, esAdmin.Succeeded));
-
-            var enlacesExtras = new ColeccionRecursos<LibroDTOR> { Valores = dtos };
-
-            enlacesExtras.Enlaces.Add(new DatoHATEOAS(
-                enlace: Url.Link("obtenerLibros", new { }), 
-                descripcion: "self", 
-                metodo: "GET"));
-            if(esAdmin.Succeeded)
-            {
-                enlacesExtras.Enlaces.Add(new DatoHATEOAS(
-                enlace: Url.Link("registrarLibro", new { }),
-                descripcion: "libro-registrar",
-                metodo: "POST"));
-            }
             
 
 
-            return enlacesExtras;
+            var dtos = mapper.Map<List<LibroDTOR>>(libros);
+            
+
+            if (incluirHATEOAS)
+            {
+                var esAdmin = await authorizationService.AuthorizeAsync(User, "esAdmin");
+                
+                //dtos.ForEach(dto => generarEnlaces(dto, esAdmin.Succeeded));
+                
+                var enlacesExtras = new ColeccionRecursos<LibroDTOR> { Valores = dtos };
+
+                enlacesExtras.Enlaces.Add(new DatoHATEOAS(
+                    enlace: Url.Link("obtenerLibros", new { }),
+                    descripcion: "self",
+                    metodo: "GET"));
+                if (esAdmin.Succeeded)
+                {
+
+                    enlacesExtras.Enlaces.Add(new DatoHATEOAS(
+                    enlace: Url.Link("registrarLibro", new { }),
+                    descripcion: "libro-registrar",
+                    metodo: "POST"));
+                }
+
+                return Ok(enlacesExtras);
+
+            }
+
+            
+            
+
+
+            return Ok(dtos);
         }
 
         [AllowAnonymous]
         [HttpGet("{id:int}", Name ="obtenerLibrosID")]
-        public async Task<ActionResult<LibroDTORConAutor>> Get(int id)
+        [ServiceFilter(typeof(HATEOASLibroFilterAttribute))]
+        public async Task<ActionResult<LibroDTORConAutor>> Get(int id, [FromHeader] string incluirHATEOAS)
         {
             //* Traer los comentarios cuando se cargue los libros
             //var libro = await context.Libros.Include(libroDB=> libroDB.Comentarios).FirstOrDefaultAsync(libroDB => libroDB.Id.Equals(id));
@@ -76,8 +91,8 @@ namespace API_CRUD.Controllers
             libro.AutoresLibros = libro.AutoresLibros.OrderBy(x=> x.Orden).ToList();
 
             var dto = mapper.Map<LibroDTORConAutor>(libro);
-            var esAdmin = await authorizationService.AuthorizeAsync(User, "esAdmin");
-            generarEnlaces(dto, esAdmin.Succeeded);
+            //var esAdmin = await authorizationService.AuthorizeAsync(User, "esAdmin");
+            //generarEnlaces(dto, esAdmin.Succeeded);
             return dto;
 
         }
@@ -191,19 +206,6 @@ namespace API_CRUD.Controllers
         }
 
 
-        private void generarEnlaces(LibroDTOR libroDTOR, bool esAdmin)
-        {
-            libroDTOR.Enlaces.Add(new DatoHATEOAS(enlace: Url.Link("obtenerLibrosID", new { id = libroDTOR.Id }), descripcion: "self", metodo: "GET"));
-
-            if(esAdmin)
-            {
-                libroDTOR.Enlaces.Add(new DatoHATEOAS(enlace: Url.Link("actualizarLibro", new { id = libroDTOR.Id }), descripcion: "autor-actualizar", metodo: "PUT"));
-
-                libroDTOR.Enlaces.Add(new DatoHATEOAS(enlace: Url.Link("eliminarLibro", new { id = libroDTOR.Id }), descripcion: "autor-eliminar", metodo: "DELETE"));
-
-            }
-
-        }
     }
 
     

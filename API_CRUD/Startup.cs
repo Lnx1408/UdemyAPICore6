@@ -9,6 +9,8 @@ using System.Text;
 using Microsoft.OpenApi.Models;
 using System.IdentityModel.Tokens.Jwt;
 using API_CRUD.Servicios;
+using API_CRUD.Utilidades;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace API_CRUD
 {
@@ -123,6 +125,11 @@ namespace API_CRUD
                     //.WithExposedHeaders();
                 });
             });
+
+
+            services.AddTransient<GeneradorEnlaces>();
+            services.AddTransient<HATEOASLibroFilterAttribute>();
+            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
 
         }
