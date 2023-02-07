@@ -59,6 +59,9 @@ namespace API_CRUD
                 //Añadir el filtro de manera global
                 opciones.Filters.Add(typeof(FiltroExepcion));
 
+                //Controlador para agrupar por versiones
+                opciones.Conventions.Add(new SwaggerVersiones());
+
             }).AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles).AddNewtonsoftJson();
 
             services.AddDbContext<AppDbContext>(options=> options.UseSqlServer(Configuration.GetConnectionString("defaultConnection")));
@@ -68,6 +71,12 @@ namespace API_CRUD
             //Añadimos las configuraciones para poder introducir el token en nuestros endpoints y se muestre qué endpoint necesitan autorización y la capacidad de ingresar el tiken para autorizar el uso de las APIS
             services.AddSwaggerGen(c =>
             {
+
+                //Para aplicar versionamiento de API
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebApi", Version = "v1"});
+                c.SwaggerDoc("v2", new OpenApiInfo { Title = "WebApi", Version = "v2" });
+                c.OperationFilter<AgregarParametroVersion>();
+
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
@@ -150,7 +159,14 @@ namespace API_CRUD
             if (env.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(
+                    c=>
+                    {
+                        //Configuarión del endpoint de versiones.
+                        c.SwaggerEndpoint("swagger/v1/swagger.json", "WebAPI v1");
+                        c.SwaggerEndpoint("swagger/v2/swagger.json", "WebAPI v2");
+                    }
+                    );
             }
 
             app.UseHttpsRedirection();

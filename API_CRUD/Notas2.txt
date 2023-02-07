@@ -115,5 +115,25 @@ Nota: en caso de que se vaya a guardar el hash, es necesario almacenar también 
 Hipermedia como motor del listado de la aplicación es una restricción de REST que ayuda a los clientes a navegar por los recursos de nuestra
 web API y saber de los servicios que se ofrece.
 
+--------------------------------------------------------------- VERSIONAMIENTO --------------------------------------------------------------
+Permite a los usuarios a trabajar con diferentes versiones de nuestra API, ya sea porque no todoos los usuarios se pasen a una nueva versión o por preferencia.
+
+*	Versionamiento con URL: api/v1/autores - api/vn/autores.
+
+*	Por atributo: se usa para evitasr alterar el enlace de la API y solo enviar un atributo por la cabecera indicando la versión quew desea manejar. 
+
+
+1.	Indiferentemente del tipo de version hay que crear carpetas dentro de controller para tener diferentes mejoras o servicios añadidos que diferencien una version de la otra. 
+
+2.	Añadir nuevos documentos de swager en startup - AddSwaggerGen() y en UseSwaggerUI().
+
+3.	Creamos una clase para gestionar las versiones SwaggerVersiones.
+
+4. Vamos a la clase Startup en AddControllers para agregar:  opciones.Conventions.Add(new SwaggerVersiones());
+
+5.	Si se va a usar PostMan u otro servicio de este tipo, entonces ya es suficiente con eso, ahora que si se va a usar desde el swager, entonces
+	hay que añadir otros puntos para poder enviart la versión por la cabecera, creamos la clase AgregarParametroVersion en utilidades.
+
+
 
 

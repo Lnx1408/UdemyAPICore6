@@ -10,9 +10,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace API_CRUD.Controllers
+namespace API_CRUD.Controllers.V1
 {
-    public class CuentasController: ControllerBase
+    public class CuentasController : ControllerBase
     {
         private readonly UserManager<IdentityUser> userManager;
         private readonly IConfiguration configuration;
@@ -38,18 +38,19 @@ namespace API_CRUD.Controllers
             dataProtector = dataProtectionProvider.CreateProtector("SeRecomiendaUsarCaracteresAleatoriosParaMasSeguridad");
         }
 
-        [HttpGet("Encriptar", Name ="encriptar")]
+        [HttpGet("Encriptar", Name = "encriptar")]
         public ActionResult Encriptar()
         {
             var textoPlano = "Voy a ser encriptado";
             var textoCifrado = dataProtector.Protect(textoPlano);
             var textoDesencriptado = dataProtector.Unprotect(textoCifrado);
 
-            return Ok( new {
-               textoPlano = textoPlano,
-               textoCifrado = textoCifrado,
-               textoDesencriptado = textoDesencriptado
-               
+            return Ok(new
+            {
+                textoPlano,
+                textoCifrado,
+                textoDesencriptado
+
             });
         }
 
@@ -57,7 +58,7 @@ namespace API_CRUD.Controllers
         /// Si pasa el tiempo establecido, entonces no se va a poder descifrar el código. 
         /// </summary>
         /// <returns></returns>
-        [HttpGet("EncriptarPorTiempo", Name ="encriptarPorTiempo")]
+        [HttpGet("EncriptarPorTiempo", Name = "encriptarPorTiempo")]
         public ActionResult EncriptarPorTiempo()
         {
             var protectorLimitadoPorTiempo = dataProtector.ToTimeLimitedDataProtector();
@@ -69,9 +70,9 @@ namespace API_CRUD.Controllers
 
             return Ok(new
             {
-                textoPlano = textoPlano,
-                textoCifrado = textoCifrado,
-                textoDesencriptado = textoDesencriptado
+                textoPlano,
+                textoCifrado,
+                textoDesencriptado
 
             });
         }
@@ -84,9 +85,9 @@ namespace API_CRUD.Controllers
 
             return Ok(new
             {
-                textoPlano = textoPlano,
-                resultado1 = resultado1,
-                resultado2 = resultado2,
+                textoPlano,
+                resultado1,
+                resultado2,
             });
         }
 
@@ -100,7 +101,7 @@ namespace API_CRUD.Controllers
 
             var resultado = await userManager.CreateAsync(usuario, credencialesUsuario.Password);
 
-            if(resultado.Succeeded)
+            if (resultado.Succeeded)
             {
                 return await ConstruirToken(credencialesUsuario);
             }
@@ -114,7 +115,7 @@ namespace API_CRUD.Controllers
         public async Task<ActionResult<RespuestaAutenticacion>> Login(CredencialesUsuario credencialesUsuario)
         {
             //Si la propiedad lockoutOnFailure fuese verdadera, entonces bloquearía el acceso a los usuarios que an tenido intentos fallidos para ingresar al aplicativo
-            var resultado = await signInManager.PasswordSignInAsync(credencialesUsuario.Email, credencialesUsuario.Password, isPersistent:false, lockoutOnFailure: false);
+            var resultado = await signInManager.PasswordSignInAsync(credencialesUsuario.Email, credencialesUsuario.Password, isPersistent: false, lockoutOnFailure: false);
 
             if (resultado.Succeeded)
             {
@@ -136,12 +137,12 @@ namespace API_CRUD.Controllers
             var email = emailClaim.Value;
             var credencialesUsuario = new CredencialesUsuario()
             {
-                Email = email 
+                Email = email
             };
             return await ConstruirToken(credencialesUsuario);
         }
 
-        private async Task<RespuestaAutenticacion> ConstruirToken(CredencialesUsuario  credencialesUsuario)
+        private async Task<RespuestaAutenticacion> ConstruirToken(CredencialesUsuario credencialesUsuario)
         {
             //Es una lista de información emitida por una fuente que nosotros confiamos
             //No hay que colocar información sensible en los claims porque puede ser accedido por los usuarios.
@@ -162,7 +163,7 @@ namespace API_CRUD.Controllers
             var creds = new SigningCredentials(llave, SecurityAlgorithms.HmacSha256);
             var expiracion = DateTime.UtcNow.AddDays(1);
 
-            var securityToken = new JwtSecurityToken(issuer: null, audience:null, claims: claims, expires: expiracion, signingCredentials: creds);
+            var securityToken = new JwtSecurityToken(issuer: null, audience: null, claims: claims, expires: expiracion, signingCredentials: creds);
 
             return new RespuestaAutenticacion()
             {

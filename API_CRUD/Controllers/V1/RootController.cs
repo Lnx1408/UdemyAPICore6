@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace API_CRUD.Controllers
+namespace API_CRUD.Controllers.V1
 {
     [ApiController]
     [Route("api")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class RootController:ControllerBase
+    public class RootController : ControllerBase
     {
         private readonly IAuthorizationService authorizationService;
 
@@ -36,12 +36,12 @@ namespace API_CRUD.Controllers
             datosHateoas.Add(new DatoHATEOAS(enlace: Url.Link("encriptarConHash", new { }), descripcion: "encriptar-hash", metodo: "GET"));
 
             datosHateoas.Add(new DatoHATEOAS(enlace: Url.Link("registrar", new { }), descripcion: "registrar-usuario", metodo: "POST"));
-            
+
             datosHateoas.Add(new DatoHATEOAS(enlace: Url.Link("login", new { }), descripcion: "login", metodo: "GET"));
 
             datosHateoas.Add(new DatoHATEOAS(enlace: Url.Link("obtenerAutores", new { }), descripcion: "autores", metodo: "GET"));
 
-            
+
 
             //Solo si el usuario registrado es administrador se le mostrará la siguiente información.
             if (esAdmin.Succeeded)
@@ -60,7 +60,7 @@ namespace API_CRUD.Controllers
                 datosHateoas.Add(new DatoHATEOAS(enlace: Url.Link("RegistrarLibro", new { }), descripcion: "libro-crear", metodo: "GET"));
                 datosHateoas.Add(new DatoHATEOAS(enlace: Url.Link("ObtenerLibrosID", new { }), descripcion: "libro-id", metodo: "POST"));
 
-                    
+
 
             }
             return datosHateoas;

@@ -7,11 +7,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace API_CRUD.Controllers
+namespace API_CRUD.Controllers.V1
 {
     [ApiController]
     [Route("api/libros/{libroId:int}/comentarios")]
-    public class ComentariosController: ControllerBase
+    public class ComentariosController : ControllerBase
     {
         private readonly AppDbContext context;
         private readonly IMapper mapper;
@@ -30,12 +30,12 @@ namespace API_CRUD.Controllers
         {
 
             //Es recomendable obtener los datos del usuario por medio de los claims
-            var emailClaim = HttpContext.User.Claims.Where(claim=> claim.Type == "email").FirstOrDefault();
+            var emailClaim = HttpContext.User.Claims.Where(claim => claim.Type == "email").FirstOrDefault();
             var email = emailClaim.Value;
             var usuario = await userManager.FindByEmailAsync(email);
             var usuarioId = usuario.Id;
-            var existeLibro = await context.Libros.AnyAsync(libroDB=> libroDB.Id.Equals(libroId));
-            
+            var existeLibro = await context.Libros.AnyAsync(libroDB => libroDB.Id.Equals(libroId));
+
             if (!existeLibro)
             {
                 return NotFound();
@@ -47,11 +47,11 @@ namespace API_CRUD.Controllers
             context.Add(comentario);
             await context.SaveChangesAsync();
             var comentarioDTOR = mapper.Map<ComentarioDTOR>(comentario);
-            return CreatedAtRoute("ObtenerComentarioId", new {id = comentario.Id, libroId = comentario.LibroId}, comentarioDTOR);
+            return CreatedAtRoute("ObtenerComentarioId", new { id = comentario.Id, libroId = comentario.LibroId }, comentarioDTOR);
 
         }
 
-        [HttpPut("{id:int}", Name ="actualizarComentario")]
+        [HttpPut("{id:int}", Name = "actualizarComentario")]
         public async Task<ActionResult> Put(int libroId, int id, ComentarioDTOC comentarioDTOC)
         {
             var existeLibro = await context.Libros.AnyAsync(libroDB => libroDB.Id.Equals(libroId));
@@ -61,12 +61,12 @@ namespace API_CRUD.Controllers
             }
 
             var existeComentario = await context.Comentarios.AnyAsync(comentarioDTOC => comentarioDTOC.Id.Equals(id));
-            if(!existeComentario)
+            if (!existeComentario)
             {
                 return NotFound($"No existe el Comentario {id}");
             }
             var comentario = mapper.Map<Comentario>(comentarioDTOC);
-            comentario.Id= id;
+            comentario.Id = id;
             comentario.LibroId = libroId;
 
             context.Update(comentario);
@@ -77,11 +77,11 @@ namespace API_CRUD.Controllers
         }
 
 
-        [HttpGet("id/{id:int}", Name ="obtenerComentarioId")]
+        [HttpGet("id/{id:int}", Name = "obtenerComentarioId")]
         public async Task<ActionResult<ComentarioDTOR>> GetById(int id)
         {
             var comentario = await context.Comentarios.FirstOrDefaultAsync(comentarioDB => comentarioDB.Id.Equals(id));
-            if(comentario==null)
+            if (comentario == null)
             {
                 return NotFound();
             }
@@ -93,7 +93,7 @@ namespace API_CRUD.Controllers
         [HttpGet(Name = "obtenerComentarioLibro")]
         public async Task<ActionResult<List<ComentarioDTOR>>> Get(int libroId)
         {
-            var existeLibro = await context.Libros.AnyAsync(libroDB => libroDB.Id ==libroId);
+            var existeLibro = await context.Libros.AnyAsync(libroDB => libroDB.Id == libroId);
             if (!existeLibro)
             {
                 return NotFound();
@@ -103,6 +103,6 @@ namespace API_CRUD.Controllers
 
             return mapper.Map<List<ComentarioDTOR>>(comentarios);
         }
-        
+
     }
 }

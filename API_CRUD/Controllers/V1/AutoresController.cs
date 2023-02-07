@@ -6,13 +6,15 @@ using API_CRUD.Filtros;
 using API_CRUD.DTOs;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using API_CRUD.Utilidades;
 
-namespace API_CRUD.Controllers
+namespace API_CRUD.Controllers.V1
 {
     [ApiController]
     [Route("api/autores")]
+    [CabeceraPresente("x-version", "1")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "EsAdmin")] //La política se establece en el servicio AddAuthorization de Startup
-    public class AutoresController: ControllerBase
+    public class AutoresController : ControllerBase
     {
         private readonly AppDbContext context;
         private readonly IMapper mapper;
@@ -39,7 +41,7 @@ namespace API_CRUD.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet("{id:int}", Name ="obtenerAutorID")]
+        [HttpGet("{id:int}", Name = "obtenerAutorID")]
         public async Task<ActionResult<AutorDTORConLibros>> buscarAutorId(int id)
         {
             var autor = await context.Autores
@@ -53,7 +55,7 @@ namespace API_CRUD.Controllers
             }
 
             var dto = mapper.Map<AutorDTORConLibros>(autor);
-            
+
             generarEnlaces(dto);
 
             return dto;
@@ -81,7 +83,7 @@ namespace API_CRUD.Controllers
         public async Task<ActionResult> Post([FromBody] AutorDTOC autorDTO)
         {
             var nombreDuplicado = await context.Autores.AnyAsync(x => x.Nombre == autorDTO.Nombre);
-            if(nombreDuplicado)
+            if (nombreDuplicado)
             {
                 return BadRequest($"Ya existe un autor con el mismo nombre: {autorDTO.Nombre}");
             }
@@ -91,16 +93,16 @@ namespace API_CRUD.Controllers
 
             context.Add(autor);
             await context.SaveChangesAsync();
-            
+
             var autorDTOR = mapper.Map<AutorDTOR>(autor);
             //No se recomienda pasar directamente la entidad, sino un DTO de esta.
-            return CreatedAtRoute("obtenerAutorID",new {id = autor.Id},autorDTOR);            
+            return CreatedAtRoute("obtenerAutorID", new { id = autor.Id }, autorDTOR);
 
         }
 
 
 
-        [HttpPut("{id:int}", Name ="actualizarAutor")]
+        [HttpPut("{id:int}", Name = "actualizarAutor")]
         public async Task<ActionResult> Put(AutorDTOC autorDTO, int id)
         {
             var existe = await context.Autores.AnyAsync(x => x.Id.Equals(id));
@@ -112,7 +114,7 @@ namespace API_CRUD.Controllers
 
             var autor = mapper.Map<Autor>(autorDTO);
             autor.Id = id;
-            
+
 
             context.Update(autor);
             await context.SaveChangesAsync();
@@ -120,7 +122,7 @@ namespace API_CRUD.Controllers
 
         }
 
-        [HttpDelete("{id:int}", Name ="eliminarAutor")]
+        [HttpDelete("{id:int}", Name = "eliminarAutor")]
         public async Task<ActionResult> Delete(int id)
         {
             var existe = await context.Autores.AnyAsync(x => x.Id.Equals(id));
@@ -129,18 +131,18 @@ namespace API_CRUD.Controllers
                 return NotFound($"No existe el autor con ID {id}");
             }
 
-            context.Remove(new Autor() { Id = id});
+            context.Remove(new Autor() { Id = id });
             await context.SaveChangesAsync();
             return Ok();
 
         }
 
 
-        [HttpGet("Configuraciones", Name ="obtenerConfiguraciones")]
+        [HttpGet("Configuraciones", Name = "obtenerConfiguraciones")]
         public ActionResult<string> getConnectionResult()
         {
             string cadena = configuration["connectionStrings:defaultConnection"] + "\n";
-            cadena += configuration["apellido"]; 
+            cadena += configuration["apellido"];
             return cadena;
         }
 
@@ -150,7 +152,7 @@ namespace API_CRUD.Controllers
         /// <param name="autorDTOR"></param>
         private void generarEnlaces(AutorDTOR autorDTOR)
         {
-            autorDTOR.Enlaces.Add(new DatoHATEOAS(enlace: Url.Link("obtenerAutorID", new { id = autorDTOR.Id }), descripcion:"self", metodo: "GET"));
+            autorDTOR.Enlaces.Add(new DatoHATEOAS(enlace: Url.Link("obtenerAutorID", new { id = autorDTOR.Id }), descripcion: "self", metodo: "GET"));
 
             autorDTOR.Enlaces.Add(new DatoHATEOAS(enlace: Url.Link("actualizarAutor", new { id = autorDTOR.Id }), descripcion: "autor-id", metodo: "PUT"));
 

@@ -8,18 +8,19 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using API_CRUD.Utilidades;
 
-namespace API_CRUD.Controllers
+namespace API_CRUD.Controllers.V1
 {
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "EsAdmin")]
     [ApiController]
     [Route("api/libros")]
-    public class LibrosController: ControllerBase
+    public class LibrosController : ControllerBase
     {
         private readonly AppDbContext context;
         private readonly IMapper mapper;
         private readonly IAuthorizationService authorizationService;
 
-        public LibrosController(AppDbContext context, IMapper mapper, IAuthorizationService authorizationService) { 
+        public LibrosController(AppDbContext context, IMapper mapper, IAuthorizationService authorizationService)
+        {
             this.context = context;
             this.mapper = mapper;
             this.authorizationService = authorizationService;
@@ -31,18 +32,18 @@ namespace API_CRUD.Controllers
         {
 
             var libros = await context.Libros.ToListAsync();
-            
+
 
 
             var dtos = mapper.Map<List<LibroDTOR>>(libros);
-            
+
 
             if (incluirHATEOAS)
             {
                 var esAdmin = await authorizationService.AuthorizeAsync(User, "esAdmin");
-                
+
                 //dtos.ForEach(dto => generarEnlaces(dto, esAdmin.Succeeded));
-                
+
                 var enlacesExtras = new ColeccionRecursos<LibroDTOR> { Valores = dtos };
 
                 enlacesExtras.Enlaces.Add(new DatoHATEOAS(
@@ -62,15 +63,15 @@ namespace API_CRUD.Controllers
 
             }
 
-            
-            
+
+
 
 
             return Ok(dtos);
         }
 
         [AllowAnonymous]
-        [HttpGet("{id:int}", Name ="obtenerLibrosID")]
+        [HttpGet("{id:int}", Name = "obtenerLibrosID")]
         [ServiceFilter(typeof(HATEOASLibroFilterAttribute))]
         public async Task<ActionResult<LibroDTORConAutor>> Get(int id, [FromHeader] string incluirHATEOAS)
         {
@@ -79,7 +80,7 @@ namespace API_CRUD.Controllers
 
             //Estraer los datos de autorLibro, y a su vez por medio del ThenInclude acceder a la entidad de libro y sus atributos.
             var libro = await context.Libros
-                .Include(libroDb=> libroDb.AutoresLibros)
+                .Include(libroDb => libroDb.AutoresLibros)
                 .ThenInclude(autorLibroDb => autorLibroDb.Autor)
                 .FirstOrDefaultAsync(libroDB => libroDB.Id.Equals(id));
 
@@ -88,7 +89,7 @@ namespace API_CRUD.Controllers
                 return NotFound();
             }
 
-            libro.AutoresLibros = libro.AutoresLibros.OrderBy(x=> x.Orden).ToList();
+            libro.AutoresLibros = libro.AutoresLibros.OrderBy(x => x.Orden).ToList();
 
             var dto = mapper.Map<LibroDTORConAutor>(libro);
             //var esAdmin = await authorizationService.AuthorizeAsync(User, "esAdmin");
@@ -97,7 +98,7 @@ namespace API_CRUD.Controllers
 
         }
 
-        [HttpPost(Name ="registrarLibro")]
+        [HttpPost(Name = "registrarLibro")]
         public async Task<ActionResult> Post(LibroDTOC libroDTOC)
         {
             if (libroDTOC.AutoresIds == null)
@@ -106,7 +107,7 @@ namespace API_CRUD.Controllers
             }
 
 
-            var autoresIds = await context.Autores.Where(autorDb => libroDTOC.AutoresIds.Contains(autorDb.Id)).Select(x=> x.Id).ToListAsync();
+            var autoresIds = await context.Autores.Where(autorDb => libroDTOC.AutoresIds.Contains(autorDb.Id)).Select(x => x.Id).ToListAsync();
             if (libroDTOC.AutoresIds.Count != autoresIds.Count)
             {
                 return BadRequest("No existe uno de los autores enviados");
@@ -119,7 +120,7 @@ namespace API_CRUD.Controllers
             context.Add(libro);
             await context.SaveChangesAsync();
             var LibroDTOR = mapper.Map<LibroDTOR>(libro);
-            return CreatedAtRoute("ObtenerLibrosID", new {id = libro.Id}, LibroDTOR);
+            return CreatedAtRoute("ObtenerLibrosID", new { id = libro.Id }, LibroDTOR);
         }
 
         /// <summary>
@@ -131,9 +132,9 @@ namespace API_CRUD.Controllers
         [HttpPut("{id:int}", Name = "actualizarLibro")]
         public async Task<ActionResult> Put(int id, LibroDTOC libroDTOC)
         {
-             var libroDb = await context.Libros
-                .Include(autoresLibrosDb=>autoresLibrosDb.AutoresLibros)
-                .FirstOrDefaultAsync(LibrosDb => LibrosDb.Id.Equals(id));
+            var libroDb = await context.Libros
+               .Include(autoresLibrosDb => autoresLibrosDb.AutoresLibros)
+               .FirstOrDefaultAsync(LibrosDb => LibrosDb.Id.Equals(id));
 
             if (libroDb == null)
             {
@@ -157,7 +158,7 @@ namespace API_CRUD.Controllers
                 }
             }
         }
-        [HttpPatch(Name ="actualizarParcialmenteLibro")]
+        [HttpPatch(Name = "actualizarParcialmenteLibro")]
         public async Task<ActionResult> Patch(int id, JsonPatchDocument<LibroPatchDTO> patchDocument)
         {
             if (patchDocument == null)
@@ -165,8 +166,8 @@ namespace API_CRUD.Controllers
                 return BadRequest();
             }
 
-            var libroDb = await context.Libros.FirstOrDefaultAsync(x=>x.Id == id);
-            if(libroDb == null)
+            var libroDb = await context.Libros.FirstOrDefaultAsync(x => x.Id == id);
+            if (libroDb == null)
             {
                 return NotFound();
             }
@@ -177,7 +178,7 @@ namespace API_CRUD.Controllers
 
             var esValido = TryValidateModel(libroDTO);
 
-            if(!esValido)
+            if (!esValido)
             {
                 return BadRequest(ModelState);
             }
@@ -190,7 +191,7 @@ namespace API_CRUD.Controllers
         }
 
 
-        [HttpDelete("{id:int}", Name ="eliminarLibro")]
+        [HttpDelete("{id:int}", Name = "eliminarLibro")]
         public async Task<ActionResult> Delete(int id)
         {
             var existe = await context.Libros.AnyAsync(x => x.Id.Equals(id));
@@ -208,6 +209,6 @@ namespace API_CRUD.Controllers
 
     }
 
-    
-    
+
+
 }
